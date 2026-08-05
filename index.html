@@ -308,12 +308,20 @@
     from { opacity: 0; transform: translateY(20px); }
     to   { opacity: 1; transform: translateY(0); }
   }
-
-  .home-animate {
-    opacity: 0;
-    animation: loadIn 0.48s cubic-bezier(0, 0, 0.2, 1) forwards;
+  @keyframes loadInDisabled {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 0.5; transform: translateY(0); }
   }
+
   @media (prefers-reduced-motion: no-preference) {
+    /* fill-mode: both → from-keyframe wins during delay (overrides any cascade opacity) */
+    .home-animate {
+      animation: loadIn 0.48s cubic-bezier(0, 0, 0.2, 1) both;
+    }
+    /* Disabled card ends at 0.5 to match its resting state */
+    #page-home .cards-grid .action-card.home-animate.disabled {
+      animation-name: loadInDisabled;
+    }
     #page-home .sparkle-icon                         { animation-delay: 0.05s; }
     #page-home .greeting                             { animation-delay: 0.28s; }
     #page-home .subtitle                             { animation-delay: 0.46s; }
