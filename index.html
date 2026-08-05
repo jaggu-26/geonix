@@ -276,8 +276,57 @@
   }
   .tooltip-wrapper:hover .tooltip { opacity: 1; }
 
+  /* ── Star loop animations ── */
+  .sparkle-icon svg { overflow: visible; }
+  .sparkle-icon svg path { transform-box: fill-box; transform-origin: center; }
+
+  @keyframes starMain {
+    0%, 100% { transform: rotate(0deg) scale(1); }
+    20%       { transform: rotate(18deg) scale(1.14); }
+    50%       { transform: rotate(2deg) scale(0.88); }
+    75%       { transform: rotate(-12deg) scale(1.07); }
+  }
+  @keyframes starSecond {
+    0%, 100% { transform: rotate(0deg) scale(1); opacity: 0.6; }
+    30%       { transform: rotate(-24deg) scale(1.22); opacity: 1; }
+    65%       { transform: rotate(10deg) scale(0.82); opacity: 0.35; }
+  }
+  @keyframes starTiny {
+    0%, 100% { transform: rotate(0deg) scale(1); opacity: 0.4; }
+    40%       { transform: rotate(30deg) scale(1.3); opacity: 0.9; }
+    72%       { transform: rotate(-18deg) scale(0.78); opacity: 0.25; }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .sparkle-icon svg path:nth-of-type(1) { animation: starMain   3.6s ease-in-out infinite; }
+    .sparkle-icon svg path:nth-of-type(2) { animation: starSecond 3.6s ease-in-out infinite 1.1s; }
+    .sparkle-icon svg path:nth-of-type(3) { animation: starTiny   3.0s ease-in-out infinite 2.2s; }
+  }
+
+  /* ── Section-by-section page load ── */
+  @keyframes loadIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .home-animate {
+    opacity: 0;
+    animation: loadIn 0.48s cubic-bezier(0, 0, 0.2, 1) forwards;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    #page-home .sparkle-icon                         { animation-delay: 0.05s; }
+    #page-home .greeting                             { animation-delay: 0.28s; }
+    #page-home .subtitle                             { animation-delay: 0.46s; }
+    #page-home .cards-grid .action-card:nth-child(1) { animation-delay: 0.66s; }
+    #page-home .cards-grid .action-card:nth-child(2) { animation-delay: 0.80s; }
+    #page-home .cards-grid .action-card:nth-child(3) { animation-delay: 0.94s; }
+    #page-home .cards-grid .action-card:nth-child(4) { animation-delay: 1.08s; }
+    #page-home .cards-grid .action-card:nth-child(5) { animation-delay: 1.22s; }
+    #page-home .input-bar                            { animation-delay: 1.44s; }
+  }
+
   /* Transitions */
-  .fade-in { animation: fadeIn 0.4s ease; }
+  .fade-in { animation: loadIn 0.4s ease; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
   /* Fleet Table */
@@ -415,14 +464,14 @@
 
     <!-- Page 1: Home -->
     <div class="page active" id="page-home">
-      <div class="home-content fade-in">
-        <div class="sparkle-icon">
+      <div class="home-content">
+        <div class="sparkle-icon home-animate">
           <svg viewBox="0 0 40 40" fill="currentColor"><path d="M20 2l3 8 8 3-8 3-3 8-3-8-8-3 8-3z" fill="#1852fe"/><path d="M30 18l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#1852fe" opacity="0.6"/><path d="M10 26l1.5 4 4 1.5-4 1.5-1.5 4-1.5-4-4-1.5 4-1.5z" fill="#1852fe" opacity="0.4"/></svg>
         </div>
-        <div class="greeting">Good Morning! Sayak</div>
-        <div class="subtitle">What can I help with today?</div>
+        <div class="greeting home-animate">Good Morning! Sayak</div>
+        <div class="subtitle home-animate">What can I help with today?</div>
         <div class="cards-grid">
-          <div class="action-card" onclick="selectCard(this, 'handover')" id="card-handover">
+          <div class="action-card home-animate" onclick="selectCard(this, 'handover')" id="card-handover">
             <div class="card-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
             </div>
@@ -431,7 +480,7 @@
               <div class="card-desc">Summarize and send voyage status, key actions and notes for vessel handover OR Send prefixture notes for the vessel</div>
             </div>
           </div>
-          <div class="action-card" onclick="selectCard(this, 'sop')">
+          <div class="action-card home-animate" onclick="selectCard(this, 'sop')">
             <div class="card-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/><path d="M14 2v6h6"/></svg>
             </div>
@@ -440,7 +489,7 @@
               <div class="card-desc">Retrieve analyse, and compile information related to operational procedures and guidelines</div>
             </div>
           </div>
-          <div class="action-card" onclick="selectCard(this, 'voyage')">
+          <div class="action-card home-animate" onclick="selectCard(this, 'voyage')">
             <div class="card-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3v18h18"/><path d="M7 16l4-8 4 4 4-6"/></svg>
             </div>
@@ -449,7 +498,7 @@
               <div class="card-desc">Find key voyage metrics, performance highlights, and operational constraints.</div>
             </div>
           </div>
-          <div class="action-card disabled">
+          <div class="action-card home-animate disabled">
             <div class="card-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
             </div>
@@ -458,7 +507,7 @@
               <div class="card-desc">Prepare a claim based on laytime calculations and other charter party terms.</div>
             </div>
           </div>
-          <div class="action-card fleet-card" onclick="selectCard(this, 'fleet')" style="grid-column: span 2;">
+          <div class="action-card home-animate fleet-card" onclick="selectCard(this, 'fleet')" style="grid-column: span 2;">
             <div class="card-icon">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M0.822876 19.5015C2.23998 19.5086 3.58527 18.8814 4.48955 17.79C6.18684 19.8151 8.22499 20.4483 10.25 18.751C10.4644 18.5709 11.07 17.9664 11.25 17.751C12.1543 18.8414 12.75 19.251 13.75 19.501" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -478,7 +527,7 @@
             </div>
           </div>
         </div>
-        <div class="input-bar">
+        <div class="input-bar home-animate">
           <input type="text" placeholder="Give me a handover Doc" id="home-input" onkeydown="if(event.key==='Enter') navigateToVesselSelection()">
           <button class="generate-btn" onclick="navigateToVesselSelection()">
             <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg>
@@ -852,7 +901,14 @@
     });
   }
 
-  function goHome() { showPage('page-home'); }
+  function goHome() {
+    showPage('page-home');
+    document.querySelectorAll('#page-home .home-animate').forEach(el => {
+      el.style.animation = 'none';
+      el.offsetHeight;
+      el.style.animation = '';
+    });
+  }
 
   function selectCard(card, type) {
     if (card.classList.contains('disabled')) return;
