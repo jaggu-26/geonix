@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Geonix</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #f8fafc; overflow: hidden; height: 100vh; }
+
+  .app { display: flex; height: 100vh; width: 100vw; }
+
+  /* Sidebar */
+  .sidebar {
+    width: 56px; background: #fff; display: flex; flex-direction: column;
+    align-items: center; padding: 16px 0; border-right: 1px solid #e8ecf0;
+    justify-content: space-between; flex-shrink: 0; z-index: 10;
+  }
+  .sidebar-top { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .sidebar-bottom { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .sidebar-icon {
+    width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+    border-radius: 8px; cursor: pointer; transition: background 0.2s; color: #64748b;
+  }
+  .sidebar-icon:hover { background: #f1f5f9; color: #1852fe; }
+  .sidebar-icon.active { background: #eef2ff; color: #1852fe; }
+  .sidebar-icon svg { width: 20px; height: 20px; }
+  .sidebar-divider { width: 20px; height: 1px; background: #e2e8f0; margin: 4px 0; }
+  .hamburger { width: 24px; height: 24px; cursor: pointer; display: flex; flex-direction: column; justify-content: center; gap: 4px; padding: 4px; margin-bottom: 8px; }
+  .hamburger span { display: block; height: 2px; background: #334155; border-radius: 1px; }
+  .avatar {
+    width: 28px; height: 28px; background: #001e4c; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 12px; font-weight: 600; cursor: pointer;
+  }
+
+  /* Main Canvas */
+  .canvas {
+    flex: 1; position: relative; overflow: hidden;
+    background: linear-gradient(135deg, #f0f4ff 0%, #f8fafc 40%, #f8fafc 60%, #f0f4ff 100%);
+  }
+  .canvas::before, .canvas::after {
+    content: ''; position: absolute; border-radius: 50%;
+    background: radial-gradient(circle, rgba(24,82,254,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .canvas::before { width: 900px; height: 700px; top: -500px; right: -200px; }
+  .canvas::after { width: 900px; height: 700px; top: -500px; left: -300px; }
+
+  /* Header */
+  .header {
+    position: absolute; top: 20px; left: 20px;
+    display: flex; align-items: center; gap: 12px; z-index: 5;
+  }
+  .header-logo { font-size: 20px; font-weight: 700; color: #000; cursor: pointer; }
+  .header-icon {
+    width: 24px; height: 24px; cursor: pointer; color: #64748b;
+    display: flex; align-items: center; justify-content: center;
+    margin-left: 20px;
+  }
+  .header-icon:hover { color: #1852fe; }
+
+  /* Page Container */
+  .page { display: none; width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+  .page.active { display: block; }
+
+  /* Page 1 - Home */
+  .home-content {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    text-align: center; width: 780px;
+  }
+  .sparkle-icon { margin-bottom: 16px; }
+  .sparkle-icon svg { width: 40px; height: 40px; color: #1852fe; }
+  .greeting { font-size: 38px; font-weight: 600; color: #000; line-height: 1.3; margin-bottom: 4px; }
+  .subtitle { font-size: 38px; font-weight: 400; color: #000; margin-bottom: 40px; }
+
+  .cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: left; }
+  .action-card {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 20px;
+    padding: 20px; display: flex; gap: 20px; cursor: pointer;
+    transition: all 0.2s; min-height: 119px; align-items: flex-start;
+  }
+  .action-card:hover { border-color: #1852fe; box-shadow: 0 4px 16px rgba(24,82,254,0.1); transform: translateY(-2px); }
+  .action-card.disabled { opacity: 0.5; cursor: default; }
+  .action-card.disabled:hover { border-color: #e2e8f0; box-shadow: none; transform: none; }
+  .card-icon {
+    width: 44px; height: 44px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: #1852fe; margin-top: 4px; transition: transform 0.2s;
+  }
+  .card-icon svg { width: 28px; height: 28px; }
+  .card-title { font-size: 18px; font-weight: 600; color: #000; margin-bottom: 6px; }
+  .card-desc { font-size: 14px; color: #64748b; line-height: 1.5; }
+  .disabled .card-title { color: #94a3b8; }
+  .disabled .card-desc { color: #94a8b9; }
+  .disabled .card-icon { color: #94a3b8; }
+
+  /* Input bar (home) */
+  .input-bar {
+    margin-top: 40px; background: #f1f5f9; border-radius: 24px;
+    padding: 8px 8px 8px 16px; display: flex; align-items: center; gap: 8px;
+  }
+  .input-bar input {
+    flex: 1; background: none; border: none; outline: none;
+    font-size: 14px; color: #000; font-family: inherit;
+  }
+  .input-bar input::placeholder { color: #94a3b8; }
+  .generate-btn {
+    background: #1852fe; color: #fff; border: none; border-radius: 20px;
+    padding: 8px 20px; font-size: 14px; font-weight: 500; cursor: pointer;
+    display: flex; align-items: center; gap: 8px; transition: background 0.2s;
+    font-family: inherit; white-space: nowrap;
+  }
+  .generate-btn:hover { background: #1340d4; }
+  .generate-btn svg { width: 14px; height: 14px; }
+  .send-btn {
+    width: 34px; height: 34px; background: #1852fe; border-radius: 50%;
+    border: none; cursor: pointer; display: flex; align-items: center;
+    justify-content: center; color: #fff; transition: background 0.2s; flex-shrink: 0;
+  }
+  .send-btn:hover { background: #1340d4; }
+  .send-btn svg { width: 16px; height: 16px; }
+
+  /* Page 2 - Vessel Selection */
+  .chat-area {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 60px 0 0 0;
+  }
+  .messages { flex: 1; overflow-y: auto; padding: 20px 40px; display: flex; flex-direction: column; justify-content: flex-end; }
+  .message-bubble { max-width: 560px; margin: 0 auto 0; }
+  .bot-message {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 20px;
+    padding: 24px; margin-bottom: 16px;
+  }
+  .bot-message-header {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+  }
+  .bot-icon {
+    width: 28px; height: 28px; background: #f1f5f9; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .bot-icon svg { width: 16px; height: 16px; color: #64748b; }
+  .bot-text { font-size: 16px; font-weight: 500; color: #000; }
+
+  .vessel-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+  .vessel-chip {
+    padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 500;
+    cursor: pointer; transition: all 0.2s; border: 1.5px solid #e2e8f0;
+    background: #fff; color: #334155; user-select: none;
+  }
+  .vessel-chip:hover { border-color: #1852fe; color: #1852fe; }
+  .vessel-chip.selected { background: #001e4c; color: #fff; border-color: #001e4c; }
+  .vessel-link { font-size: 14px; color: #64748b; margin-bottom: 16px; }
+  .vessel-link a { color: #1852fe; text-decoration: underline; cursor: pointer; }
+  .vessel-link a:hover { color: #1340d4; }
+
+  .generate-row { display: flex; justify-content: flex-end; margin-top: 8px; }
+
+  /* Chat input */
+  .chat-input-bar {
+    padding: 12px 40px 20px; display: flex; align-items: center; gap: 8px;
+  }
+  .chat-input-bar .input-wrapper {
+    flex: 1; background: #f1f5f9; border-radius: 24px;
+    padding: 12px 16px; display: flex; align-items: center; gap: 8px;
+  }
+  .chat-input-bar input {
+    flex: 1; background: none; border: none; outline: none;
+    font-size: 14px; color: #000; font-family: inherit;
+  }
+  .chat-input-bar input::placeholder { color: #94a3b8; }
+  .or-text { font-size: 16px; color: #94a3b8; font-weight: 500; margin: 0 8px; }
+
+  /* Page 3 - Generating */
+  .generating-indicator {
+    display: flex; align-items: center; gap: 8px; margin-top: 8px;
+  }
+  .generating-dot {
+    width: 8px; height: 8px; background: #1852fe; border-radius: 50%;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+  .generating-text { font-size: 16px; color: #000; font-weight: 500; }
+  .timestamp { font-size: 12px; color: #94a3b8; margin-left: 8px; }
+
+  /* Page 4 - Output */
+  .output-area {
+    position: absolute; top: 39px; left: 0; right: 0; bottom: 0;
+    display: flex; flex-direction: column;
+  }
+  .output-content {
+    flex: 1; overflow-y: auto; padding: 20px 40px;
+    max-width: 740px; margin: 0 auto; width: 100%;
+  }
+  .output-summary {
+    font-size: 14px; color: #334155; line-height: 1.7; margin-bottom: 24px;
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px;
+  }
+  .output-summary strong { font-weight: 600; }
+  .output-summary .section-title { font-size: 14px; font-weight: 700; color: #000; margin-top: 12px; }
+
+  .vessel-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; align-items: stretch; }
+  .vessel-card {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px;
+    display: flex; flex-direction: column;
+  }
+  .vessel-card-badge {
+    display: inline-block; font-size: 12px; color: #64748b; margin-bottom: 8px;
+  }
+  .vessel-card h3 { font-size: 16px; font-weight: 600; color: #000; margin-bottom: 12px; }
+  .vessel-card p { font-size: 14px; color: #64748b; line-height: 1.6; }
+
+  .action-buttons { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+  .action-btn {
+    display: flex; align-items: center; gap: 6px; padding: 8px 16px;
+    border: 1px solid #e2e8f0; border-radius: 10px; background: #fff;
+    font-size: 12px; color: #1852fe; cursor: pointer; transition: all 0.2s;
+    font-family: inherit; font-weight: 500;
+  }
+  .action-btn:hover { background: #eef2ff; border-color: #1852fe; }
+  .action-btn svg { width: 14px; height: 14px; }
+
+  .feedback-row { display: flex; gap: 8px; margin-bottom: 20px; }
+  .feedback-btn {
+    width: 32px; height: 32px; border: 1px solid #e2e8f0; border-radius: 8px;
+    background: #fff; cursor: pointer; display: flex; align-items: center;
+    justify-content: center; color: #64748b; transition: all 0.2s;
+  }
+  .feedback-btn:hover { border-color: #1852fe; color: #1852fe; background: #eef2ff; }
+  .feedback-btn.active { border-color: #1852fe; color: #1852fe; background: #eef2ff; }
+  .feedback-btn svg { width: 16px; height: 16px; }
+
+  .followup-bar {
+    max-width: 740px; margin: 0 auto; width: 100%;
+    padding: 12px 40px 20px; display: flex; align-items: center;
+  }
+  .followup-bar .input-wrapper {
+    flex: 1; background: #f1f5f9; border-radius: 24px;
+    padding: 12px 16px; display: flex; align-items: center; gap: 8px;
+  }
+  .followup-bar input {
+    flex: 1; background: none; border: none; outline: none;
+    font-size: 14px; color: #000; font-family: inherit;
+  }
+  .followup-bar input::placeholder { color: #94a3b8; }
+
+  /* Tooltip */
+  .tooltip-wrapper { position: relative; }
+  .tooltip-wrapper .tooltip {
+    position: absolute; left: 50%; transform: translateX(-50%);
+    bottom: calc(100% + 8px); background: #1e293b; color: #fff;
+    font-size: 11px; padding: 4px 8px; border-radius: 4px;
+    white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.2s;
+  }
+  .tooltip-wrapper:hover .tooltip { opacity: 1; }
+
+  /* Transitions */
+  .fade-in { animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* Fleet Table */
+  .fleet-output-area {
+    position: absolute; top: 39px; left: 0; right: 0; bottom: 0;
+    display: flex; flex-direction: column;
+  }
+  .fleet-output-content {
+    flex: 1; overflow-y: auto; padding: 20px 40px;
+    max-width: 900px; margin: 0 auto; width: 100%;
+  }
+  .fleet-output-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .fleet-output-title {
+    font-size: 16px; font-weight: 600; color: #000;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .fleet-output-title svg { width: 18px; height: 18px; color: #1852fe; }
+  .fleet-output-meta { font-size: 12px; color: #94a3b8; }
+  .fleet-table-wrap { overflow-x: auto; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 20px; }
+  .fleet-table {
+    width: 100%; border-collapse: collapse; background: #fff;
+    font-size: 13px;
+  }
+  .fleet-table thead tr { background: #f8fafc; }
+  .fleet-table th {
+    padding: 11px 14px; text-align: left; font-size: 11px; font-weight: 600;
+    color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;
+    border-bottom: 1px solid #e2e8f0; white-space: nowrap;
+  }
+  .fleet-table td {
+    padding: 12px 14px; color: #334155; border-bottom: 1px solid #f1f5f9;
+    white-space: nowrap; font-variant-numeric: tabular-nums;
+  }
+  .fleet-table tbody tr:last-child td { border-bottom: none; }
+  .fleet-table tbody tr:hover td { background: #f8fafc; }
+  .vessel-name-cell { display: flex; align-items: center; gap: 8px; }
+  .vessel-name-cell svg { width: 14px; height: 14px; color: #1852fe; flex-shrink: 0; }
+  .vessel-name-cell strong { font-weight: 600; color: #000; }
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 500;
+  }
+  .status-badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+  .status-underway { background: #eff6ff; color: #1d4ed8; }
+  .status-underway::before { background: #3b82f6; }
+  .status-loading { background: #fefce8; color: #a16207; }
+  .status-loading::before { background: #eab308; }
+  .status-discharging { background: #fff7ed; color: #c2410c; }
+  .status-discharging::before { background: #f97316; }
+  .status-ballast { background: #f1f5f9; color: #475569; }
+  .status-ballast::before { background: #94a3b8; }
+  .status-inport { background: #f0fdf4; color: #15803d; }
+  .status-inport::before { background: #22c55e; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-top">
+      <div class="hamburger" onclick="toggleSidebar()" title="Menu">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="sidebar-divider"></div>
+      <div class="sidebar-icon active tooltip-wrapper" onclick="goHome()" title="Home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <span class="tooltip">Dashboard</span>
+      </div>
+      <div class="sidebar-icon tooltip-wrapper" title="Fuel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 22V6a2 2 0 012-2h6a2 2 0 012 2v16"/><path d="M13 10h4a2 2 0 012 2v8"/><circle cx="18" cy="8" r="2"/></svg>
+        <span class="tooltip">Fuel</span>
+      </div>
+      <div class="sidebar-icon tooltip-wrapper" title="Ports">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        <span class="tooltip">Ports</span>
+      </div>
+      <div class="sidebar-icon tooltip-wrapper" title="Fleet">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20"/><path d="M5 20V8l7-4 7 4v12"/><path d="M9 20v-4h6v4"/></svg>
+        <span class="tooltip">Fleet</span>
+      </div>
+      <div class="sidebar-divider"></div>
+      <div class="sidebar-icon tooltip-wrapper" title="Reports">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <span class="tooltip">Reports</span>
+      </div>
+      <div class="sidebar-icon tooltip-wrapper" title="Vessels">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20l2-2h16l2 2"/><path d="M4 18l-1-6h18l-1 6"/><path d="M12 4v8"/><path d="M8 8h8"/></svg>
+        <span class="tooltip">Vessels</span>
+      </div>
+      <div class="sidebar-icon tooltip-wrapper" title="Connect">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+        <span class="tooltip">Connect</span>
+      </div>
+      <div class="sidebar-icon tooltip-wrapper" title="Routes">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>
+        <span class="tooltip">Routes</span>
+      </div>
+      <div class="sidebar-icon tooltip-wrapper" title="Integrations">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4l11.7 11.7M4 4H8M4 4V8M20 20l-11.7-11.7M20 20h-4M20 20v-4"/></svg>
+        <span class="tooltip">Integrations</span>
+      </div>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="sidebar-icon tooltip-wrapper" title="Help">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span class="tooltip">Help</span>
+      </div>
+      <div class="sidebar-icon tooltip-wrapper" title="Chat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        <span class="tooltip">Chat</span>
+      </div>
+      <div class="avatar" title="Profile">A</div>
+    </div>
+  </nav>
+
+  <!-- Canvas -->
+  <main class="canvas">
+    <!-- Header -->
+    <div class="header">
+      <span class="header-logo" onclick="goHome()">Geonix</span>
+      <div class="header-icon" onclick="goHome()" title="New chat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      </div>
+    </div>
+
+    <!-- Page 1: Home -->
+    <div class="page active" id="page-home">
+      <div class="home-content fade-in">
+        <div class="sparkle-icon">
+          <svg viewBox="0 0 40 40" fill="currentColor"><path d="M20 2l3 8 8 3-8 3-3 8-3-8-8-3 8-3z" fill="#1852fe"/><path d="M30 18l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#1852fe" opacity="0.6"/><path d="M10 26l1.5 4 4 1.5-4 1.5-1.5 4-1.5-4-4-1.5 4-1.5z" fill="#1852fe" opacity="0.4"/></svg>
+        </div>
+        <div class="greeting">Good Morning! Sayak</div>
+        <div class="subtitle">What can I help with today?</div>
+        <div class="cards-grid">
+          <div class="action-card" onclick="selectCard(this, 'handover')" id="card-handover">
+            <div class="card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            </div>
+            <div>
+              <div class="card-title">Prepare a handover/prefixture</div>
+              <div class="card-desc">Summarize and send voyage status, key actions and notes for vessel handover OR Send prefixture notes for the vessel</div>
+            </div>
+          </div>
+          <div class="action-card" onclick="selectCard(this, 'sop')">
+            <div class="card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/><path d="M14 2v6h6"/></svg>
+            </div>
+            <div>
+              <div class="card-title">Ask about SOPs</div>
+              <div class="card-desc">Retrieve analyse, and compile information related to operational procedures and guidelines</div>
+            </div>
+          </div>
+          <div class="action-card" onclick="selectCard(this, 'voyage')">
+            <div class="card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3v18h18"/><path d="M7 16l4-8 4 4 4-6"/></svg>
+            </div>
+            <div>
+              <div class="card-title">Fetch voyage insights</div>
+              <div class="card-desc">Find key voyage metrics, performance highlights, and operational constraints.</div>
+            </div>
+          </div>
+          <div class="action-card disabled">
+            <div class="card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            </div>
+            <div>
+              <div class="card-title">Prepare a claim</div>
+              <div class="card-desc">Prepare a claim based on laytime calculations and other charter party terms.</div>
+            </div>
+          </div>
+          <div class="action-card fleet-card" onclick="selectCard(this, 'fleet')" style="grid-column: span 2;">
+            <div class="card-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0.822876 19.5015C2.23998 19.5086 3.58527 18.8814 4.48955 17.79C6.18684 19.8151 8.22499 20.4483 10.25 18.751C10.4644 18.5709 11.07 17.9664 11.25 17.751C12.1543 18.8414 12.75 19.251 13.75 19.501" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M13 19.25C15.5 20.25 16.772 18.9277 17.2071 18C18.0238 19.7213 19.4756 19.9474 20.45 18.5047C20.5532 18.3517 20.6491 18.1831 20.7357 18C21.1708 18.9269 21.8181 19.4608 22.5 19.4548" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M2.80411 16.4313L2.3459 14.828C2.20227 14.3243 2.46627 13.7943 2.95583 13.6061L8.66674 11.4092L14.3776 13.6061C14.8662 13.7943 15.1312 14.3243 14.9876 14.828L14.5294 16.4313" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M15.5 11.5L19.9899 13.1873C20.374 13.3746 20.5823 13.9023 20.4694 14.4038L20.1092 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M3.86206 12.956V7.88064C3.86206 7.32229 4.31521 6.86914 4.87356 6.86914H12.4598C13.0181 6.86914 13.4713 7.32229 13.4713 7.88064V12.956" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M10 4H7V6H10V4Z" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M15.5 7.5H17.5H18.8684C19.5 7.5 19.5 8 19.5 8.59366V12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M17.5 6.5H16.5V7H17.5V6.5Z" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M8.66663 11.7158V16.4305" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div>
+              <div class="card-title">Fleet Position List</div>
+              <div class="card-desc">View real-time positions, speeds, and headings for your entire fleet across active voyages.<br>Monitor ETAs, port arrivals, and voyage status for multiple vessels in a single structured view.<br>Export a fleet overview table for operations, chartering, or management reporting.</div>
+            </div>
+          </div>
+        </div>
+        <div class="input-bar">
+          <input type="text" placeholder="Give me a handover Doc" id="home-input" onkeydown="if(event.key==='Enter') navigateToVesselSelection()">
+          <button class="generate-btn" onclick="navigateToVesselSelection()">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg>
+            Start Generating
+          </button>
+          <button class="send-btn" onclick="navigateToVesselSelection()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5,12 12,5 19,12"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Page 2: Vessel Selection -->
+    <div class="page" id="page-vessels">
+      <div class="chat-area">
+        <div class="messages">
+          <div class="message-bubble fade-in">
+            <div class="bot-message">
+              <div class="bot-message-header">
+                <div class="bot-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h.01M15 9h.01M9 15c1 1.5 5 1.5 6 0"/></svg>
+                </div>
+                <span class="bot-text">Please select the vessels for handover/pre-fixture details</span>
+              </div>
+              <div class="vessel-chips" id="vessel-chips">
+                <div class="vessel-chip" onclick="toggleChip(this)">STI Goal</div>
+                <div class="vessel-chip selected" onclick="toggleChip(this)">STI MAX</div>
+                <div class="vessel-chip" onclick="toggleChip(this)">STI Max</div>
+                <div class="vessel-chip selected" onclick="toggleChip(this)">Ocean Soveregin</div>
+                <div class="vessel-chip" onclick="toggleChip(this)">Nova Horizon</div>
+              </div>
+              <div class="vessel-link">Showing only your vessels. <a onclick="showAllVessels()">See all vessels</a></div>
+              <div class="generate-row">
+                <button class="generate-btn" onclick="startGenerating()" id="gen-btn">
+                  <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg>
+                  Start Generating
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-bar">
+          <div class="input-wrapper">
+            <input type="text" placeholder="Inactive" disabled>
+          </div>
+          <span class="or-text">OR</span>
+          <button class="send-btn" style="opacity:0.4;cursor:default" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5,12 12,5 19,12"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Page 3: Generating -->
+    <div class="page" id="page-generating">
+      <div class="chat-area">
+        <div class="messages">
+          <div class="message-bubble fade-in">
+            <div class="bot-message">
+              <div class="bot-message-header">
+                <div class="bot-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h.01M15 9h.01M9 15c1 1.5 5 1.5 6 0"/></svg>
+                </div>
+                <span class="bot-text">Please select the vessels for handover/pre-fixture details</span>
+              </div>
+              <div class="vessel-chips">
+                <div class="vessel-chip">STI Goal</div>
+                <div class="vessel-chip selected">STI MAX</div>
+                <div class="vessel-chip">STI Max</div>
+                <div class="vessel-chip selected">Ocean Soveregin</div>
+                <div class="vessel-chip">Nova Horizon</div>
+              </div>
+              <div class="vessel-link">Showing only your vessels, <a>see all vessels</a> and select?</div>
+            </div>
+            <div class="generating-indicator" style="margin-top:16px;">
+              <div class="generating-dot"></div>
+              <span class="generating-text">Generating..</span>
+              <span class="timestamp">12/12/11 20:00 UTC</span>
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-bar">
+          <div class="input-wrapper">
+            <input type="text" placeholder="Inactive" disabled>
+          </div>
+          <span class="or-text">OR</span>
+          <button class="send-btn" style="opacity:0.4;cursor:default" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5,12 12,5 19,12"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Page 4: Output -->
+    <div class="page" id="page-output">
+      <div class="output-area">
+        <div class="output-content fade-in">
+          <div class="output-summary">
+            <strong>Handover summary:</strong><br><br>
+            STI ROSE (Voyage Code: TOSE38) is chartered by Equinor ASA with laycan from 18–20 July 2025, loading at Mongstad and Amsterdam and discharging at Yosu and Singapore. It is a ~110K DWT vessel with an ordered speed of 13 knots and a summer draft of 14.6 m. The vessel is expected at Singapore on 10 Sept 2025, with freight invoice status still pending. Recent cargoes include Naphtha, Jet A1, and CPP (ULSD). The last SIRE inspection (8 Jun 2025) was by Ecopetrol, with approvals from BP, ENOC, and Ecopetrol, and outstanding tasks include port checks, AGM, freight/BBB, and regulatory declarations.
+            <br><br>
+            <div class="section-title">OCEAN SOVEREGIN</div>
+            Voyage Code: TOSE38 is chartered by Equinor ASA with laycan from 18–20 July 2025, loading at Mongstad and Amsterdam and discharging at Yosu and Singapore. It is a ~110K DWT vessel with an ordered speed of 13 knots and a summer draft of 14.6 m.
+          </div>
+
+          <div class="vessel-cards">
+            <div class="vessel-card">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1852fe" stroke-width="2"><path d="M2 20l2-2h16l2 2"/><path d="M4 18l-1-6h18l-1 6"/></svg>
+                <span style="font-size:16px;font-weight:600;">STI Goal — Handover</span>
+              </div>
+              <div class="vessel-card-badge">Voyage Code: #SMAX18</div>
+              <p>
+                DWT: 47,499 t &nbsp;·&nbsp; Draft: 12.81 m<br>
+                Status: Commenced<br>
+                Charterer: SCAS
+              </p>
+            </div>
+            <div class="vessel-card">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1852fe" stroke-width="2"><path d="M2 20l2-2h16l2 2"/><path d="M4 18l-1-6h18l-1 6"/></svg>
+                <span style="font-size:16px;font-weight:600;">Ocean Sovereign — Handover</span>
+              </div>
+              <div class="vessel-card-badge">Voyage Code: #TOSE38</div>
+              <p>
+                DWT: 47,499 t &nbsp;·&nbsp; Draft: 12.81 m<br>
+                Status: Scheduled<br>
+                Charterer: Abu Dhabi Marine Intl.
+              </p>
+            </div>
+          </div>
+
+          <div class="action-buttons">
+            <button class="action-btn" onclick="actionClick('email')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              Share it as Handover Email
+            </button>
+            <button class="action-btn" onclick="actionClick('pdf')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+              Export as PDF
+            </button>
+            <button class="action-btn" onclick="actionClick('word')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              Export as Word
+            </button>
+            <button class="action-btn" onclick="actionClick('prefixture')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              Share it as Pre-Fixture Email
+            </button>
+          </div>
+
+          <div class="feedback-row">
+            <button class="feedback-btn" onclick="toggleFeedback(this, 'up')" title="Thumbs up">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3H14z"/><path d="M7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3"/></svg>
+            </button>
+            <button class="feedback-btn" onclick="toggleFeedback(this, 'down')" title="Thumbs down">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15v4a3 3 0 003 3l4-9V2H5.72a2 2 0 00-2 1.7l-1.38 9a2 2 0 002 2.3H10z"/><path d="M17 2h2.67A2.31 2.31 0 0122 4v7a2.31 2.31 0 01-2.33 2H17"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="followup-bar">
+          <div class="input-wrapper">
+            <input type="text" placeholder="Ask a follow up question" id="followup-input" onkeydown="if(event.key==='Enter') handleFollowUp()">
+            <button class="send-btn" onclick="handleFollowUp()" style="width:28px;height:28px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5,12 12,5 19,12"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Page 5: Fleet Vessel Selection -->
+    <div class="page" id="page-fleet-vessels">
+      <div class="chat-area">
+        <div class="messages">
+          <div class="message-bubble fade-in">
+            <div class="bot-message">
+              <div class="bot-message-header">
+                <div class="bot-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h.01M15 9h.01M9 15c1 1.5 5 1.5 6 0"/></svg>
+                </div>
+                <span class="bot-text">Select vessels to generate the Fleet Position List</span>
+              </div>
+              <div class="vessel-chips" id="fleet-vessel-chips">
+                <div class="vessel-chip" onclick="toggleFleetChip(this)">STI Rose</div>
+                <div class="vessel-chip selected" onclick="toggleFleetChip(this)">Ocean Sovereign</div>
+                <div class="vessel-chip selected" onclick="toggleFleetChip(this)">STI Goal</div>
+                <div class="vessel-chip" onclick="toggleFleetChip(this)">Nova Horizon</div>
+                <div class="vessel-chip selected" onclick="toggleFleetChip(this)">Minerva Libra</div>
+                <div class="vessel-chip" onclick="toggleFleetChip(this)">STI Max</div>
+                <div class="vessel-chip" onclick="toggleFleetChip(this)">Sea Pioneer</div>
+                <div class="vessel-chip selected" onclick="toggleFleetChip(this)">Pacific Dream</div>
+              </div>
+              <div class="vessel-link">Showing only your vessels. <a onclick="showAllVessels()">See all vessels</a></div>
+              <div class="generate-row">
+                <button class="generate-btn" onclick="startFleetGenerating()" id="fleet-gen-btn">
+                  <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg>
+                  Generate Fleet List
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-bar">
+          <div class="input-wrapper">
+            <input type="text" placeholder="Inactive" disabled>
+          </div>
+          <span class="or-text">OR</span>
+          <button class="send-btn" style="opacity:0.4;cursor:default" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5,12 12,5 19,12"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Page 6: Fleet Generating -->
+    <div class="page" id="page-fleet-generating">
+      <div class="chat-area">
+        <div class="messages">
+          <div class="message-bubble fade-in">
+            <div class="bot-message">
+              <div class="bot-message-header">
+                <div class="bot-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h.01M15 9h.01M9 15c1 1.5 5 1.5 6 0"/></svg>
+                </div>
+                <span class="bot-text">Select vessels to generate the Fleet Position List</span>
+              </div>
+              <div class="vessel-chips">
+                <div class="vessel-chip selected">Ocean Sovereign</div>
+                <div class="vessel-chip selected">STI Goal</div>
+                <div class="vessel-chip selected">Minerva Libra</div>
+                <div class="vessel-chip selected">Pacific Dream</div>
+              </div>
+              <div class="vessel-link">Showing only your vessels, <a>see all vessels</a> and select?</div>
+            </div>
+            <div class="generating-indicator" style="margin-top:16px;">
+              <div class="generating-dot"></div>
+              <span class="generating-text">Generating fleet positions..</span>
+              <span class="timestamp">05/08/26 09:00 UTC</span>
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-bar">
+          <div class="input-wrapper">
+            <input type="text" placeholder="Inactive" disabled>
+          </div>
+          <span class="or-text">OR</span>
+          <button class="send-btn" style="opacity:0.4;cursor:default" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5,12 12,5 19,12"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Page 7: Fleet Output -->
+    <div class="page" id="page-fleet-output">
+      <div class="fleet-output-area">
+        <div class="fleet-output-content fade-in">
+          <div class="fleet-output-header">
+            <div class="fleet-output-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20l2-2h16l2 2"/><path d="M4 18l-1-6h18l-1 6"/><path d="M12 4v8"/><path d="M8 8h8"/></svg>
+              Fleet Position List
+            </div>
+            <div class="fleet-output-meta">As of 05 Aug 2026 · 09:00 UTC &nbsp;·&nbsp; 4 vessels</div>
+          </div>
+
+          <div class="fleet-table-wrap">
+            <table class="fleet-table">
+              <thead>
+                <tr>
+                  <th>Vessel</th>
+                  <th>IMO</th>
+                  <th>Position</th>
+                  <th>Speed (kn)</th>
+                  <th>Heading</th>
+                  <th>Next Port</th>
+                  <th>ETA</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><div class="vessel-name-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20l2-2h16l2 2"/><path d="M4 18l-1-6h18l-1 6"/></svg><strong>Ocean Sovereign</strong></div></td>
+                  <td>9876543</td>
+                  <td>24.2°N 57.8°E</td>
+                  <td>12.4</td>
+                  <td>285°</td>
+                  <td>Singapore</td>
+                  <td>12 Sep 2026</td>
+                  <td><span class="status-badge status-underway">Underway</span></td>
+                </tr>
+                <tr>
+                  <td><div class="vessel-name-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20l2-2h16l2 2"/><path d="M4 18l-1-6h18l-1 6"/></svg><strong>STI Goal</strong></div></td>
+                  <td>8765432</td>
+                  <td>18.5°N 68.2°E</td>
+                  <td>11.8</td>
+                  <td>092°</td>
+                  <td>Mumbai</td>
+                  <td>15 Sep 2026</td>
+                  <td><span class="status-badge status-loading">Loading</span></td>
+                </tr>
+                <tr>
+                  <td><div class="vessel-name-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20l2-2h16l2 2"/><path d="M4 18l-1-6h18l-1 6"/></svg><strong>Minerva Libra</strong></div></td>
+                  <td>7654321</td>
+                  <td>1.2°N 104.0°E</td>
+                  <td>14.1</td>
+                  <td>315°</td>
+                  <td>Rotterdam</td>
+                  <td>28 Sep 2026</td>
+                  <td><span class="status-badge status-ballast">Ballast</span></td>
+                </tr>
+                <tr>
+                  <td><div class="vessel-name-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20l2-2h16l2 2"/><path d="M4 18l-1-6h18l-1 6"/></svg><strong>Pacific Dream</strong></div></td>
+                  <td>6543210</td>
+                  <td>51.5°N 0.5°W</td>
+                  <td>0.0</td>
+                  <td>—</td>
+                  <td>In Port</td>
+                  <td>—</td>
+                  <td><span class="status-badge status-inport">In Port</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="action-buttons">
+            <button class="action-btn" onclick="actionClick('email')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              Share via Email
+            </button>
+            <button class="action-btn" onclick="actionClick('pdf')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+              Export as PDF
+            </button>
+            <button class="action-btn" onclick="actionClick('word')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              Export as Excel
+            </button>
+          </div>
+
+          <div class="feedback-row">
+            <button class="feedback-btn" onclick="toggleFeedback(this, 'up')" title="Thumbs up">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 00-3-3l-4 9v11h11.28a2 2 0 002-1.7l1.38-9a2 2 0 00-2-2.3H14z"/><path d="M7 22H4a2 2 0 01-2-2v-7a2 2 0 012-2h3"/></svg>
+            </button>
+            <button class="feedback-btn" onclick="toggleFeedback(this, 'down')" title="Thumbs down">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15v4a3 3 0 003 3l4-9V2H5.72a2 2 0 00-2 1.7l-1.38 9a2 2 0 002 2.3H10z"/><path d="M17 2h2.67A2.31 2.31 0 0122 4v7a2.31 2.31 0 01-2.33 2H17"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="followup-bar">
+          <div class="input-wrapper">
+            <input type="text" placeholder="Ask a follow up question" id="fleet-followup-input" onkeydown="if(event.key==='Enter') handleFleetFollowUp()">
+            <button class="send-btn" onclick="handleFleetFollowUp()" style="width:28px;height:28px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5,12 12,5 19,12"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+  function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const page = document.getElementById(pageId);
+    page.classList.add('active');
+    page.querySelectorAll('.fade-in').forEach(el => {
+      el.style.animation = 'none';
+      el.offsetHeight;
+      el.style.animation = '';
+    });
+  }
+
+  function goHome() { showPage('page-home'); }
+
+  function selectCard(card, type) {
+    if (card.classList.contains('disabled')) return;
+    document.querySelectorAll('.action-card').forEach(c => c.style.borderColor = '');
+    card.style.borderColor = '#1852fe';
+    if (type === 'handover') {
+      setTimeout(() => navigateToVesselSelection(), 300);
+    } else if (type === 'fleet') {
+      setTimeout(() => showPage('page-fleet-vessels'), 300);
+    }
+  }
+
+  function navigateToVesselSelection() { showPage('page-vessels'); }
+
+  function toggleChip(chip) {
+    chip.classList.toggle('selected');
+    updateGenerateButton();
+  }
+
+  function updateGenerateButton() {
+    const selected = document.querySelectorAll('#vessel-chips .vessel-chip.selected');
+    const btn = document.getElementById('gen-btn');
+    btn.style.opacity = selected.length > 0 ? '1' : '0.5';
+    btn.style.pointerEvents = selected.length > 0 ? 'auto' : 'none';
+  }
+
+  function showAllVessels() { alert('Showing all available vessels...'); }
+
+  function startGenerating() {
+    const selected = document.querySelectorAll('#vessel-chips .vessel-chip.selected');
+    if (selected.length === 0) return;
+    showPage('page-generating');
+    setTimeout(() => { showPage('page-output'); }, 3000);
+  }
+
+  function toggleSidebar() {}
+
+  function actionClick(type) {
+    const messages = { email: 'Preparing handover email...', pdf: 'Exporting as PDF...', word: 'Exporting as Word document...', prefixture: 'Preparing pre-fixture email...' };
+    const btn = event.target.closest('.action-btn');
+    btn.style.background = '#eef2ff';
+    btn.style.borderColor = '#1852fe';
+    setTimeout(() => { btn.style.background = ''; btn.style.borderColor = ''; alert(messages[type]); }, 400);
+  }
+
+  function toggleFeedback(btn, type) {
+    document.querySelectorAll('.feedback-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  function handleFollowUp() {
+    const input = document.getElementById('followup-input');
+    if (input.value.trim()) { alert('Follow-up: ' + input.value); input.value = ''; }
+  }
+
+  function toggleFleetChip(chip) {
+    chip.classList.toggle('selected');
+    const selected = document.querySelectorAll('#fleet-vessel-chips .vessel-chip.selected');
+    const btn = document.getElementById('fleet-gen-btn');
+    btn.style.opacity = selected.length > 0 ? '1' : '0.5';
+    btn.style.pointerEvents = selected.length > 0 ? 'auto' : 'none';
+  }
+
+  function startFleetGenerating() {
+    const selected = document.querySelectorAll('#fleet-vessel-chips .vessel-chip.selected');
+    if (selected.length === 0) return;
+    showPage('page-fleet-generating');
+    setTimeout(() => { showPage('page-fleet-output'); }, 3000);
+  }
+
+  function handleFleetFollowUp() {
+    const input = document.getElementById('fleet-followup-input');
+    if (input.value.trim()) { alert('Follow-up: ' + input.value); input.value = ''; }
+  }
+
+  document.querySelectorAll('.action-card:not(.disabled)').forEach(card => {
+    card.addEventListener('mouseenter', () => { card.querySelector('.card-icon').style.transform = 'scale(1.1)'; });
+    card.addEventListener('mouseleave', () => { card.querySelector('.card-icon').style.transform = 'scale(1)'; });
+  });
+</script>
+
+</body>
+</html>
