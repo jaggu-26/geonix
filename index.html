@@ -344,7 +344,7 @@
   }
   .fleet-output-content {
     flex: 1; overflow-y: auto; padding: 20px 40px;
-    max-width: 900px; margin: 0 auto; width: 100%;
+    max-width: 100%; width: 100%;
   }
   .fleet-output-header {
     display: flex; align-items: center; justify-content: space-between;
@@ -357,6 +357,27 @@
   .fleet-output-title svg { width: 18px; height: 18px; color: #1852fe; }
   .fleet-output-meta { font-size: 12px; color: #94a3b8; }
   .fleet-table-wrap { overflow-x: auto; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 20px; }
+
+  /* ── Fleet Position Summary — transposed table ── */
+  .fleet-summary-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid #b0b8c4; margin-bottom: 20px; }
+  .fleet-summary-table { border-collapse: collapse; font-size: 11px; min-width: 980px; width: 100%; font-family: 'Gilroy', -apple-system, system-ui, sans-serif; }
+  .fleet-summary-table th,
+  .fleet-summary-table td { border: 1px solid #b0b8c4; padding: 6px 8px; vertical-align: top; line-height: 1.45; }
+  /* Header row — vessel names */
+  .fleet-summary-table thead th { background: #fffa8b; font-weight: 700; text-align: center; color: #0e1a33; white-space: nowrap; }
+  .fleet-summary-table thead th.col-label { text-align: left; min-width: 190px; }
+  /* Label column */
+  .fleet-summary-table td.col-label { background: #fffa8b; font-weight: 700; color: #0e1a33; min-width: 190px; max-width: 200px; white-space: normal; }
+  /* Regular data cells */
+  .fleet-summary-table tbody td { background: #ffffff; text-align: center; color: #1a1a1a; }
+  /* Present Position — light coral */
+  .fleet-summary-table .row-position td:not(.col-label) { background: #ffcfcb; font-weight: 600; color: #b91c1c; }
+  /* Reason of call — light amber */
+  .fleet-summary-table .row-reason td:not(.col-label) { background: #ffd8a8; font-weight: 600; color: #7c3d00; }
+  /* VOY TYPE — yellow like labels */
+  .fleet-summary-table .row-voy td { background: #fffa8b; font-weight: 700; color: #0e1a33; }
+  /* Remarks / Agent — left-aligned, wrapping */
+  .fleet-summary-table td.cell-left { text-align: left; white-space: normal; min-width: 150px; }
   .fleet-table {
     width: 100%; border-collapse: collapse; background: #fff;
     font-size: 13px;
@@ -732,7 +753,7 @@
               <div class="generate-row">
                 <button class="generate-btn" onclick="startFleetGenerating()" id="fleet-gen-btn">
                   <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg>
-                  Generate Fleet List
+                  Generate Fleet Position Summary
                 </button>
               </div>
             </div>
@@ -796,65 +817,167 @@
           <div class="fleet-output-header">
             <div class="fleet-output-title">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20l2-2h16l2 2"/><path d="M4 18l-1-6h18l-1 6"/><path d="M12 4v8"/><path d="M8 8h8"/></svg>
-              Fleet Position List
+              Fleet Position Summary
             </div>
-            <div class="fleet-output-meta">As of 05 Aug 2026 · 09:00 UTC &nbsp;·&nbsp; 4 vessels</div>
+            <div class="fleet-output-meta">As of 05 Aug 2026 · 09:00 UTC &nbsp;·&nbsp; 5 vessels</div>
           </div>
 
-          <div class="fleet-table-wrap">
-            <table class="fleet-table">
+          <div class="fleet-summary-wrap">
+            <table class="fleet-summary-table">
               <thead>
                 <tr>
-                  <th>Vessel</th>
-                  <th>IMO</th>
-                  <th>Position</th>
-                  <th>Speed (kn)</th>
-                  <th>Heading</th>
-                  <th>Next Port</th>
-                  <th>ETA</th>
-                  <th>Status</th>
+                  <th class="col-label">Vessel</th>
+                  <th>SEA RUNNER</th>
+                  <th>SEA SPIKE (STI GARNET)</th>
+                  <th>SEA QUEST (STI RUBY)</th>
+                  <th>SEA VIBE (TENACITY)</th>
+                  <th>FOS MERCURY (DIGNITY)</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td><div class="vessel-name-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20l2-2h16l2 2"/><path d="M4 18l-1-6h18l-1 6"/></svg><strong>Ocean Sovereign</strong></div></td>
-                  <td>9876543</td>
-                  <td>24.2°N 57.8°E</td>
-                  <td>12.4</td>
-                  <td>285°</td>
-                  <td>Singapore</td>
-                  <td>12 Sep 2026</td>
-                  <td><span class="status-badge status-underway">Underway</span></td>
+                <tr class="row-position">
+                  <td class="col-label">Present Position / Port</td>
+                  <td>RUWAIS</td>
+                  <td>GHENT</td>
+                  <td>Beira, Mozambique</td>
+                  <td>FUJAIRAH</td>
+                  <td>BEIRA</td>
                 </tr>
                 <tr>
-                  <td><div class="vessel-name-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20l2-2h16l2 2"/><path d="M4 18l-1-6h18l-1 6"/></svg><strong>STI Goal</strong></div></td>
-                  <td>8765432</td>
-                  <td>18.5°N 68.2°E</td>
-                  <td>11.8</td>
-                  <td>092°</td>
-                  <td>Mumbai</td>
-                  <td>15 Sep 2026</td>
-                  <td><span class="status-badge status-loading">Loading</span></td>
+                  <td class="col-label">Last Port</td>
+                  <td>RABIGH</td>
+                  <td>TARRAGONA</td>
+                  <td>FUJAIRAH</td>
+                  <td>NEW MANGALORE</td>
+                  <td>SOHAR</td>
                 </tr>
                 <tr>
-                  <td><div class="vessel-name-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20l2-2h16l2 2"/><path d="M4 18l-1-6h18l-1 6"/></svg><strong>Minerva Libra</strong></div></td>
-                  <td>7654321</td>
-                  <td>1.2°N 104.0°E</td>
-                  <td>14.1</td>
-                  <td>315°</td>
-                  <td>Rotterdam</td>
-                  <td>28 Sep 2026</td>
-                  <td><span class="status-badge status-ballast">Ballast</span></td>
+                  <td class="col-label">Arrival (present / last port if at sea) &nbsp; LT</td>
+                  <td>09/10/25 18:48 LT</td>
+                  <td>05/10/25 22:00 LT</td>
+                  <td>10/08/25 13:30 LT</td>
+                  <td>06/10/25 09:30 LT</td>
+                  <td>03/10/25 19:00 LT</td>
                 </tr>
                 <tr>
-                  <td><div class="vessel-name-cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20l2-2h16l2 2"/><path d="M4 18l-1-6h18l-1 6"/></svg><strong>Pacific Dream</strong></div></td>
-                  <td>6543210</td>
-                  <td>51.5°N 0.5°W</td>
-                  <td>0.0</td>
-                  <td>—</td>
-                  <td>In Port</td>
-                  <td>—</td>
-                  <td><span class="status-badge status-inport">In Port</span></td>
+                  <td class="col-label">Departure (last port) &nbsp; LT</td>
+                  <td>30/09/25 23:00 LT</td>
+                  <td>29/09/25 17:18 LT</td>
+                  <td>27/07/25 20:30 LT</td>
+                  <td>01/10/25 20:30 LT</td>
+                  <td>22/09/25 07:30 LT</td>
+                </tr>
+                <tr>
+                  <td class="col-label">Next Port</td>
+                  <td>FUJAIRAH (OWNERS CALL)</td>
+                  <td>ANTWERP</td>
+                  <td>TBC</td>
+                  <td>TBC, UAE FOR LOADING</td>
+                  <td>TBA</td>
+                </tr>
+                <tr>
+                  <td class="col-label">ETA Next Port (agw/wp)</td>
+                  <td>12-Oct-25</td>
+                  <td>12-Oct-25</td>
+                  <td>TBC</td>
+                  <td>TBC</td>
+                  <td>TBA</td>
+                </tr>
+                <tr>
+                  <td class="col-label">ETD (Present / Next Port if at Sea)</td>
+                  <td>TBC</td>
+                  <td>12-Oct-25</td>
+                  <td>20-Nov-25</td>
+                  <td>TBC</td>
+                  <td>9-Dec-25</td>
+                </tr>
+                <tr class="row-reason">
+                  <td class="col-label">Reason of call (Present / Next Port if at Sea)</td>
+                  <td>LOAD</td>
+                  <td>DISCHARGE</td>
+                  <td>DISCHARGE</td>
+                  <td>DISCHARGE</td>
+                  <td>DISCHARGE</td>
+                </tr>
+                <tr>
+                  <td class="col-label">Remarks (if any)</td>
+                  <td class="cell-left">SSCEC RENEWAL<br><br>VESSEL TO LOAD GASOLINE, GASOIL AND JETA1<br><br><strong>DESLOPPING IS PENDING / ROT FULL</strong><br><br>ANNUAL SURVEY TO BE DONE. CHARTERERS UPDATED ON SAME. NEED TO PLAN AT FUJAIRAH AFTER PRESENT VOYAGE BEFORE DEC 25<br><br>VETTING TO BE DONE AT MASSAWA<br>CREW CHANGE AND SUPPLIES PLANNED AT FUJAIRAH AFTER LOADING</td>
+                  <td class="cell-left">DISPORT ROTATION – TARAGONA &gt; GHENT &gt; ANTWERP<br><br>RECEIVED RE-DELIVERY NOTICE.<br><br>NEXT VOYAGE FIXED NOVUM ENERGY TRADING LAYCAN 12-15 OCT 2025<br><br>BERTHING PROSPECTS AT ANTWERP NOT KNOWN</td>
+                  <td class="cell-left">VESSEL ARRIVED AT BEIRA ANCHORAGE AND IS AWAITING BERTHING.<br><br>CHARTERERS ARE SUPPLYING BUNKERS AT BEIRA</td>
+                  <td class="cell-left">NEXT VOYAGE FIXED WITH ASTR AFRICA – SPOT VOYAGE PG TO SOMALIA/TANZANIA.<br>LAYCAN 12-15 OCT 2025</td>
+                  <td class="cell-left">SIRE ARRANGED AT BEIRA</td>
+                </tr>
+                <tr>
+                  <td class="col-label">Berthing Prospects</td>
+                  <td>TBA</td>
+                  <td>SPK ETB 10/10/2025 and SAF ETB 11 oct 25</td>
+                  <td>ETB 17/11/2025</td>
+                  <td>TBC</td>
+                  <td>ETB - 06 DEC 2025</td>
+                </tr>
+                <tr>
+                  <td class="col-label">BUNKERS &amp; FW ROB (in MT)</td>
+                  <td>VLSFO: 704.9 / LSMGO: 169.1 / FW: 311</td>
+                  <td>HSFO: 71.65 / LSMGO: 290.090 / BIO: 58.79 / FW: 234</td>
+                  <td>VLSFO: 356 / LSMGO: 167.1 / FW: 157</td>
+                  <td>VLSFO: 1039.6 / LSMGO: 127.5 / FW: 540</td>
+                  <td>VLSFO: 734.6 / LSMGO: 123.5 / FW: 387</td>
+                </tr>
+                <tr>
+                  <td class="col-label">Cargo &amp; Quantity</td>
+                  <td>VESSEL IN BALLAST</td>
+                  <td>HVO – 18447.79 MT<br>HEFA SPK – 14352.44 MT</td>
+                  <td>GASOIL 37017.236 MT</td>
+                  <td>GASOLINE – 38532.414 MT</td>
+                  <td>GASOIL – 25624.04 MT<br>GASOLINE – 14953 MT</td>
+                </tr>
+                <tr>
+                  <td class="col-label">Agent (Present or Next Port if at Sea)</td>
+                  <td class="cell-left"><strong>AGENTS AT RUWAIS</strong><br><br>Barwil Abu Dhabi Ruwais LLC<br>Wilhelmsen Port Services<br>Mobile: +971 56 5208540<br>wps.ruwais@wilhelmsen.com<br>Salma.gouda@wilhelmsen.com</td>
+                  <td class="cell-left"><strong>AGENTS AT GHENT / ANTWERP</strong><br>MariTeam Shipping Agencies<br>agency.antwerp@mariteam-shipping.com<br>Phone 24X7: +32 (0) 3 887 2075<br>Website: www.mariteam-shipping.com<br><br>North Trade Building – 3rd Floor<br>Noorderlaan 133, B-2030 Antwerp, Belgium</td>
+                  <td class="cell-left"><strong>AGENTS – DISCHARGE PORT – BEIRA</strong><br><br>Calisto Francisco<br>Rua General Vieira da Rocha, n. 1502<br>2nd Floor, n.18, Maquinino, Beira, Mozambique<br><br>Mobile/whatsapp: +258 846336666<br>LANDLINE: +258 23 323488<br>FAX: +258 23 323449<br>OFFICE MOBILE: +258 823079556<br>+258 843113851</td>
+                  <td class="cell-left"><strong>AGENTS AT FUJAIRAH</strong><br>Atlantic Global Shipping LLC<br><br>Akshay – Vessel Co-ordinator<br>Tel: +971 9 2222315 (24x7)<br>Mob: +971 564223131<br>Email: ops@atlanticuae.com<br><br>Adarsh Jyothy<br>+971 567029135<br>ops@atlanticuae.com<br>Aspect Tower, Office No. 2201,<br>Business Bay, Dubai, UAE</td>
+                  <td class="cell-left"><strong>AGENTS – BEIRA</strong><br>Edson Arantes Pontavida<br>MOZ HANDLING SERVICES<br>shipsagency@mozhandlings.com<br>LANDLINE: +258 20 301737<br>OFFICE MOBILE: +258 826889460<br><br>Rua General Vieira da Rocha, n. 1502<br>2nd Floor, n.18, Maquinino<br>Beira, Mozambique</td>
+                </tr>
+                <tr>
+                  <td class="col-label">Charterer &amp; CP date in Force</td>
+                  <td>ADMIC | 19 SEP 25</td>
+                  <td>ST SHIPPING | 12 FEB 2025</td>
+                  <td>ADMIC | 14.MAR.2025</td>
+                  <td>1ENERGIN DMCC | 18.SEPT.25</td>
+                  <td>ADMIC | 10 SEPT 25</td>
+                </tr>
+                <tr>
+                  <td class="col-label">VOY NOR LT | TC Delivery Date GMT</td>
+                  <td>9/22/2025 6:45</td>
+                  <td>4/6/2025 16:12</td>
+                  <td>3/26/2025 15:48</td>
+                  <td>9/27/2025 0:01</td>
+                  <td>9/12/2025 0:01</td>
+                </tr>
+                <tr>
+                  <td class="col-label">C/P Duration</td>
+                  <td>MIN 120 TO MAX 180 DAYS CHOPT</td>
+                  <td>5-7 Months CHOPT</td>
+                  <td>90 TO 150 DAYS CHOPT</td>
+                  <td>SPOT VOYAGE</td>
+                  <td>MIN 90 TO MAX 160 DAYS CHOPT</td>
+                </tr>
+                <tr>
+                  <td class="col-label">Earliest opening Date</td>
+                  <td>20-Jan-26</td>
+                  <td>12-Oct-25</td>
+                  <td>26-Nov-25</td>
+                  <td>10-Oct-25</td>
+                  <td>19-Dec-25</td>
+                </tr>
+                <tr class="row-voy">
+                  <td class="col-label">VOY TYPE</td>
+                  <td>TC</td>
+                  <td>TC</td>
+                  <td>TC</td>
+                  <td>VOY</td>
+                  <td>TC</td>
                 </tr>
               </tbody>
             </table>
