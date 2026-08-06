@@ -99,7 +99,7 @@
   .action-card {
     background: #fff; border: 1px solid #e2e8f0; border-radius: 20px;
     padding: 20px; display: flex; gap: 20px; cursor: pointer;
-    transition: all 0.2s; min-height: 119px; align-items: flex-start;
+    transition: all 0.2s; min-height: 119px; align-items: center;
   }
   .action-card:hover { border-color: #1852fe; box-shadow: 0 4px 16px rgba(24,82,254,0.1); transform: translateY(-2px); }
   .action-card.disabled { opacity: 0.5; cursor: default; }
@@ -107,7 +107,7 @@
   .card-icon {
     width: 44px; height: 44px; flex-shrink: 0;
     display: flex; align-items: center; justify-content: center;
-    color: #1852fe; margin-top: 4px; transition: transform 0.2s;
+    color: #1852fe; transition: transform 0.2s;
   }
   .card-icon svg { width: 28px; height: 28px; }
   .card-title { font-size: 18px; font-weight: 600; color: #000; margin-bottom: 6px; }
@@ -563,7 +563,16 @@
           </div>
           <div class="action-card home-animate" onclick="selectCard(this, 'sop')">
             <div class="card-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/><path d="M14 2v6h6"/></svg>
+              <svg width="44" height="44" style="width:44px;height:44px" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g clip-path="url(#clip-sops)">
+                  <path d="M33.8927 15.4495L26.717 8.27381C26.1102 7.66698 25.3053 7.33331 24.4492 7.33331H14.2082C11.427 7.33331 9.1665 9.59381 9.1665 12.375V31.625C9.1665 34.4061 11.427 36.6666 14.2082 36.6666H29.7915C32.5727 36.6666 34.8332 34.4061 34.8332 31.625V17.7173C34.8332 16.8611 34.4995 16.0545 33.8927 15.4495ZM16.0415 16.5H19.7082C20.4672 16.5 21.0832 17.116 21.0832 17.875C21.0832 18.634 20.4672 19.25 19.7082 19.25H16.0415C15.2825 19.25 14.6665 18.634 14.6665 17.875C14.6665 17.116 15.2825 16.5 16.0415 16.5ZM27.9582 30.25H16.0415C15.2825 30.25 14.6665 29.634 14.6665 28.875C14.6665 28.116 15.2825 27.5 16.0415 27.5H27.9582C28.7172 27.5 29.3332 28.116 29.3332 28.875C29.3332 29.634 28.7172 30.25 27.9582 30.25ZM27.9582 24.75H16.0415C15.2825 24.75 14.6665 24.134 14.6665 23.375C14.6665 22.616 15.2825 22 16.0415 22H27.9582C28.7172 22 29.3332 22.616 29.3332 23.375C29.3332 24.134 28.7172 24.75 27.9582 24.75ZM31.9585 17.4166H26.5832C25.5748 17.4166 24.7498 16.5916 24.7498 15.5833V10.2281L24.7737 10.219L31.964 17.4075L31.9585 17.4166Z" fill="#1852FE"/>
+                </g>
+                <defs>
+                  <clipPath id="clip-sops">
+                    <rect width="44" height="44" fill="white"/>
+                  </clipPath>
+                </defs>
+              </svg>
             </div>
             <div>
               <div class="card-title">Ask about SOPs</div>
