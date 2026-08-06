@@ -182,7 +182,7 @@
 
   .generate-row { display: flex; justify-content: flex-end; margin-top: 4px; }
 
-  #page-fleet-vessels { background: #fff; }
+  #page-fleet-vessels, #page-fleet-generating { background: #fff; }
 
   /* Fleet vessel card layout */
   .fleet-layout {
@@ -913,14 +913,13 @@
             </div>
           </div>
         </div>
-        <div class="chat-input-bar">
-          <div class="input-wrapper">
+        <div style="display:flex;justify-content:center;padding:10px 0 14px;">
+          <div class="fleet-input-bar">
             <input type="text" placeholder="Inactive" disabled>
+            <button class="fleet-upload-btn" disabled>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5,12 12,5 19,12"/></svg>
+            </button>
           </div>
-          <span class="or-text">OR</span>
-          <button class="send-btn" style="opacity:0.4;cursor:default" disabled>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5,12 12,5 19,12"/></svg>
-          </button>
         </div>
       </div>
     </div>
