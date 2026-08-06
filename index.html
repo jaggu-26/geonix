@@ -127,13 +127,15 @@
   }
   .input-bar input::placeholder { color: #94a3b8; }
   .generate-btn {
-    background: #1852fe; color: #fff; border: none; border-radius: 20px;
-    padding: 8px 20px; font-size: 14px; font-weight: 500; cursor: pointer;
-    display: flex; align-items: center; gap: 8px; transition: background 0.2s;
+    background: linear-gradient(135deg, #5b9aff 0%, #1852fe 70%);
+    color: #fff; border: none; border-radius: 28px;
+    padding: 13px 28px; font-size: 16px; font-weight: 600; cursor: pointer;
+    display: flex; align-items: center; gap: 10px; transition: opacity 0.18s;
     font-family: 'Gilroy', -apple-system, system-ui, sans-serif; white-space: nowrap;
+    box-shadow: 0 4px 14px rgba(24,82,254,0.28);
   }
-  .generate-btn:hover { background: #1340d4; }
-  .generate-btn svg { width: 14px; height: 14px; }
+  .generate-btn:hover { opacity: 0.88; }
+  .generate-btn svg { width: 18px; height: 18px; }
   .send-btn {
     width: 34px; height: 34px; background: #1852fe; border-radius: 50%;
     border: none; cursor: pointer; display: flex; align-items: center;
@@ -162,21 +164,23 @@
     display: flex; align-items: center; justify-content: center;
   }
   .bot-icon svg { width: 16px; height: 16px; color: #64748b; }
-  .bot-text { font-size: 16px; font-weight: 500; color: #000; }
+  .bot-text { font-size: 16px; font-weight: 700; color: #000; }
+  #page-fleet-vessels .bot-message { background: #f7f9ff; border-color: #dde6ff; }
 
-  .vessel-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+  .vessel-chips { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0 22px; }
   .vessel-chip {
-    padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 500;
-    cursor: pointer; transition: all 0.2s; border: 1.5px solid #e2e8f0;
-    background: #fff; color: #334155; user-select: none;
+    padding: 9px 18px; border-radius: 10px; font-size: 14px; font-weight: 500;
+    cursor: pointer; transition: all 0.18s; border: 1.5px solid #c7d7fd;
+    background: #eef2ff; color: #1e3a8a; user-select: none;
   }
-  .vessel-chip:hover { border-color: #1852fe; color: #1852fe; }
-  .vessel-chip.selected { background: #001e4c; color: #fff; border-color: #001e4c; }
-  .vessel-link { font-size: 14px; color: #64748b; margin-bottom: 16px; }
-  .vessel-link a { color: #1852fe; text-decoration: underline; cursor: pointer; }
+  .vessel-chip:hover { background: #dbe5ff; border-color: #93b4ff; color: #1852fe; }
+  .vessel-chip.selected { background: #0f1f45; color: #fff; border-color: #0f1f45; }
+  .vessel-chip.selected::before { content: '✓  '; }
+  .vessel-link { font-size: 13px; color: #64748b; margin-bottom: 20px; }
+  .vessel-link a { color: #1852fe; text-decoration: underline; cursor: pointer; font-weight: 500; }
   .vessel-link a:hover { color: #1340d4; }
 
-  .generate-row { display: flex; justify-content: flex-end; margin-top: 8px; }
+  .generate-row { display: flex; justify-content: flex-end; margin-top: 4px; }
 
   /* Chat input */
   .chat-input-bar {
@@ -802,24 +806,26 @@
             <div class="bot-message">
               <div class="bot-message-header">
                 <div class="bot-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h.01M15 9h.01M9 15c1 1.5 5 1.5 6 0"/></svg>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 20l2-2h16l2 2"/><path d="M4 18l-1-6h18l-1 6"/><path d="M12 4v8"/><path d="M8 8h8"/></svg>
                 </div>
-                <span class="bot-text">Select vessels to generate the Fleet Position List</span>
+                <span class="bot-text">Please select the vessels for the Fleet Position Summary</span>
               </div>
               <div class="vessel-chips" id="fleet-vessel-chips">
-                <div class="vessel-chip" onclick="toggleFleetChip(this)">STI Rose</div>
-                <div class="vessel-chip selected" onclick="toggleFleetChip(this)">Ocean Sovereign</div>
-                <div class="vessel-chip selected" onclick="toggleFleetChip(this)">STI Goal</div>
-                <div class="vessel-chip" onclick="toggleFleetChip(this)">Nova Horizon</div>
-                <div class="vessel-chip selected" onclick="toggleFleetChip(this)">Minerva Libra</div>
-                <div class="vessel-chip" onclick="toggleFleetChip(this)">STI Max</div>
-                <div class="vessel-chip" onclick="toggleFleetChip(this)">Sea Pioneer</div>
-                <div class="vessel-chip selected" onclick="toggleFleetChip(this)">Pacific Dream</div>
+                <div class="vessel-chip" onclick="toggleFleetChip(this)">Alkea</div>
+                <div class="vessel-chip" onclick="toggleFleetChip(this)">Amax Anthem</div>
+                <div class="vessel-chip" onclick="toggleFleetChip(this)">Atria</div>
+                <div class="vessel-chip" onclick="toggleFleetChip(this)">Conti Benguela</div>
+                <div class="vessel-chip" onclick="toggleFleetChip(this)">PS Sydney</div>
+                <div class="vessel-chip" onclick="toggleFleetChip(this)">STI Bosphorus</div>
+                <div class="vessel-chip" onclick="toggleFleetChip(this)">Sti Gallantry</div>
+                <div class="vessel-chip" onclick="toggleFleetChip(this)">Sti San Telmo</div>
+                <div class="vessel-chip" onclick="toggleFleetChip(this)">Sti Symphony</div>
+                <div class="vessel-chip" onclick="toggleFleetChip(this)">Sti Yorkville</div>
               </div>
               <div class="vessel-link">Showing only your vessels. <a onclick="showAllVessels()">See all vessels</a></div>
               <div class="generate-row">
                 <button class="generate-btn" onclick="startFleetGenerating()" id="fleet-gen-btn">
-                  <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l2 5 5 2-5 2-2 5-2-5-5-2 5-2z"/></svg>
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5L12 2zM5 15l.75 2.25L8 18l-2.25.75L5 21l-.75-2.25L2 18l2.25-.75L5 15zM19 14l.75 2.25L22 17l-2.25.75L19 20l-.75-2.25L16 17l2.25-.75L19 14z"/></svg>
                   Generate Fleet Position Summary
                 </button>
               </div>
